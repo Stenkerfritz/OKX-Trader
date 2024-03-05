@@ -1,6 +1,10 @@
 # OKX Trader
 
-al little bot for trading cryptos
+## generelles
+a little bot for trading cryptos
 
-CC
+## installation
+
+
+
 
