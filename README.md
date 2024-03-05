@@ -1,2 +1,0 @@
-# OKX-Trader
-mein Trader
