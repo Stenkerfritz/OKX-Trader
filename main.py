@@ -5,20 +5,21 @@
 # 5. Funktionen für den Zugriff auf die API
 # 6. Schleife um alles, was immer wieder ausgeführt werden soll
 
-import confic
+import config
 import okx.Account as Account
 import okx.MarketData as MarketData
 import okx.PublicData as PublicData
 import okx.SpreadTrading as SpreadTrading
 import funktion
+import json
 
 if __name__ == "__main__":
 #    print("Test")
 
 # API initialization
-    apikey = confic.YOUR_API_KEY
-    secretkey = confic.YOUR_SECRET_KEY
-    passphrase = input("Passwort")
+    apikey = config.YOUR_API_KEY
+    secretkey = config.YOUR_SECRET_KEY
+    passphrase = config.YOUR_PASS
 
     flag = "1"  # live trading: 0, demo trading: 1
     marketDataAPI = MarketData.MarketAPI(flag=flag)
@@ -32,7 +33,12 @@ if __name__ == "__main__":
 
 # Get maximum buy/sell amount or open amount
 spreadAPI = SpreadTrading.SpreadTradingAPI(apikey, secretkey, passphrase, False, flag)
-
+marketDataAPI = MarketData.MarketAPI(flag=flag)
 # get tickers
-result = spreadAPI.get_ticker(sprdId="BTC-USDT")
-print(result)
+result = marketDataAPI.get_tickers(instType="SPOT")
+print(result["code"])
+print(result["msg"])
+print(result["data"])
+json.dump(result,open('api-resultat.json','w'),indent=4,sort_keys=True)
+
+
