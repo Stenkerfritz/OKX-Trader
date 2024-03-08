@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     accountAPI = Account.AccountAPI(apikey, secretkey, passphrase, False, flag)
 
-    # start = funktion.startbetrag
+    start = funktion.startbetrag
     # stufen = funktion.sicherheit
     # quote = funktion.steigung
 
@@ -42,9 +42,12 @@ print(result["data"])
 json.dump(result,open('api-resultat.json','w'),indent=4,sort_keys=True)
 
 result = marketDataAPI.get_ticker(instId="BTC-USDT")
-w = result["data"][0]["instId"]
-k = result["data"][0]["last"]
-print(w)
-print(k)
+print(result["data"])
+handelsWaehrung = result["data"][0]["instId"]
+aktuellerKurs = result["data"][0]["last"]
+print(handelsWaehrung)
+print(aktuellerKurs)
+
+
 
 
