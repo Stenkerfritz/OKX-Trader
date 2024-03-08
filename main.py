@@ -27,12 +27,12 @@ if __name__ == "__main__":
 
     accountAPI = Account.AccountAPI(apikey, secretkey, passphrase, False, flag)
 
-    start = funktion.startbetrag
-    stufen = funktion.sicherheit
-    quote = funktion.steigung
+    # start = funktion.startbetrag
+    # stufen = funktion.sicherheit
+    # quote = funktion.steigung
 
 # Get maximum buy/sell amount or open amount
-spreadAPI = SpreadTrading.SpreadTradingAPI(apikey, secretkey, passphrase, False, flag)
+# spreadAPI = SpreadTrading.SpreadTradingAPI(apikey, secretkey, passphrase, False, flag)
 marketDataAPI = MarketData.MarketAPI(flag=flag)
 # get tickers
 result = marketDataAPI.get_tickers(instType="SPOT")
@@ -40,5 +40,11 @@ print(result["code"])
 print(result["msg"])
 print(result["data"])
 json.dump(result,open('api-resultat.json','w'),indent=4,sort_keys=True)
+
+result = marketDataAPI.get_ticker(instId="BTC-USDT")
+w = result["data"][0]["instId"]
+k = result["data"][0]["last"]
+print(w)
+print(k)
 
 
