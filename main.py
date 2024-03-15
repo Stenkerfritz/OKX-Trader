@@ -12,10 +12,8 @@ import okx.PublicData as PublicData
 import okx.SpreadTrading as SpreadTrading
 import funktion
 import json
-
-
-
-
+from datetime import datetime,timezone
+import time
 if __name__ == "__main__":
     #    print("Test")
 
@@ -51,17 +49,20 @@ if __name__ == "__main__":
     print(handelsWaehrung)
     print(handelsKurs)
 
-    funktion.kauf(handelsWaehrung, handelsBudget, flag)
+    #funktion.kauf(handelsWaehrung, handelsBudget, flag)
+
+    zeit = time.time()
+    print(int(zeit))
 
 
 
 
 
+    accountAPI = Account.AccountAPI(apikey, secretkey, passphrase, False, flag)
 
-
-
-
-
+    # Get account balance
+    result = accountAPI.get_account_balance()
+    print(result)
 
 
 
