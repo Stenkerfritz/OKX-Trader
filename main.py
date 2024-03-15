@@ -22,7 +22,7 @@ if __name__ == "__main__":
     secretkey = config.YOUR_SECRET_KEY
     passphrase = config.YOUR_PASS
 
-    flag = "1"  # live trading: 0, demo trading: 1
+    flag = "0"  # live trading: 0, demo trading: 1
     marketDataAPI = MarketData.MarketAPI(flag=flag)
     publicDataAPI = PublicData.PublicAPI(flag=flag)
 
@@ -44,12 +44,13 @@ if __name__ == "__main__":
     json.dump(result,open('api-resultat.json','w'),indent=4,sort_keys=True)
 
     result = marketDataAPI.get_ticker(instId="BTC-USDT")
+    json.dump(result, open('api-resultat-BTC-USDT".json', 'w'), indent=4, sort_keys=True)
     handelsWaehrung = result["data"][0]["instId"]
     handelsKurs = result["data"][0]["last"]
     print(handelsWaehrung)
     print(handelsKurs)
 
-    #funktion.kauf(handelsWaehrung, handelsBudget, flag)
+    # funktion.kauf(handelsWaehrung, handelsBudget, flag)
 
     zeit = time.time()
     print(int(zeit))
