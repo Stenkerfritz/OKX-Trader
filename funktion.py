@@ -12,7 +12,7 @@ import time
 
 
 def kauf(waehrung, budget, flag):
-    tradeAPI = Trade.TradeAPI(config.YOUR_API_KEY, config.YOUR_SECRET_KEY, config.YOUR_PASS, use_server_time=time.time(), flag=flag)
+    tradeAPI = Trade.TradeAPI(config.YOUR_API_KEY, config.YOUR_SECRET_KEY, config.YOUR_PASS)
     result =tradeAPI.place_order(instId="BTC-USDT", tdMode="cash",  side="buy", ordType="limit", px="19000", sz="0.01")
     print(result)
 

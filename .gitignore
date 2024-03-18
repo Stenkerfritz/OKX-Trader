@@ -6,4 +6,7 @@
 config.py
 __pycache__
 venv_okxtrader/
+.idea/workspace.xml
+results/
+.idea/workspace.xml
 

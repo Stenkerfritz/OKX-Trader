@@ -41,10 +41,10 @@ if __name__ == "__main__":
     print(result["code"])
     print(result["msg"])
     print(result["data"])
-    json.dump(result,open('api-resultat.json','w'),indent=4,sort_keys=True)
+    json.dump(result,open('results/api-resultat.json','w'),indent=4,sort_keys=True)
 
     result = marketDataAPI.get_ticker(instId="BTC-USDT")
-    json.dump(result, open('api-resultat-BTC-USDT".json', 'w'), indent=4, sort_keys=True)
+    json.dump(result, open('results/api-resultat-BTC-USDT.json', 'w'), indent=4, sort_keys=True)
     handelsWaehrung = result["data"][0]["instId"]
     handelsKurs = result["data"][0]["last"]
     print(handelsWaehrung)
