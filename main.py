@@ -17,12 +17,14 @@ import time
 if __name__ == "__main__":
     #    print("Test")
 
-    # API initialization
-    apikey = config.YOUR_API_KEY
-    secretkey = config.YOUR_SECRET_KEY
-    passphrase = config.YOUR_PASS
-
     flag = "0"  # live trading: 0, demo trading: 1
+    # API initialization
+    apikey = config.GET_API_KEY(flag)
+    secretkey = config.GET_SECRET_KEY(flag)
+    passphrase = config.GET_PASS(flag)
+
+
+
     marketDataAPI = MarketData.MarketAPI(flag=flag)
     publicDataAPI = PublicData.PublicAPI(flag=flag)
 
