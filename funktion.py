@@ -11,13 +11,23 @@ import time
 
 
 
-def kauf(waehrung, budget, flag):
-    tradeAPI = Trade.TradeAPI(config.YOUR_API_KEY, config.YOUR_SECRET_KEY, config.YOUR_PASS)
-    result =tradeAPI.place_order(instId="BTC-USDT", tdMode="cash",  side="buy", ordType="limit", px="19000", sz="0.01")
+def GET_KAUF(flag, budget):
+    tradeAPI = Trade.TradeAPI(config.GET_API_KEY(flag), config.GET_SECRET_KEY(flag), config.GET_PASS(flag), False)
+    # Simple mode, limit order
+    result = tradeAPI.place_order(
+        instId="BTC-USDT",
+        tdMode="cash",
+        clOrdId="b15",
+        side="buy",
+        ordType="market",
+        px="",
+        sz=budget
+    )
     print(result)
 
     if result["code"] == "0":
         print("Successful order request，order_id = ", result["data"][0]["ordId"])
+        print(result)
     else:
         print("Unsuccessful order request，error_code = ", result)
             # ", Error_message = ",result["data"][0]["sMsg"])
