@@ -29,42 +29,31 @@ if __name__ == "__main__":
     sicherheit = input("Bitte geben Sie an wie oft nachgekauf werden darf!")
     steigung = input("Bitte geben Sie die Steigerungquote ein!")
 
-
-
-
     marketDataAPI = MarketData.MarketAPI(flag=flag)
     publicDataAPI = PublicData.PublicAPI(flag=flag)
 
     # stufen = funktion.sicherheit
     # quote = funktion.steigung
 
-# Get maximum buy/sell amount or open amount
+    # Get maximum buy/sell amount or open amount
 
-# spreadAPI = SpreadTrading.SpreadTradingAPI(apikey, secretkey, passphrase, False, flag)
+    # spreadAPI = SpreadTrading.SpreadTradingAPI(apikey, secretkey, passphrase, False, flag)
     marketDataAPI = MarketData.MarketAPI(flag=flag)
-# get tickers
+    # get tickers
     result = marketDataAPI.get_tickers(instType="SPOT")
     print(result["code"])
     print(result["msg"])
     print(result["data"])
     json.dump(result,open('results/api-resultat.json','w'),indent=4,sort_keys=True)
 
-
-
-
-
     zeit = time.time()
     print(int(zeit))
-
-
-
-
 
     accountAPI = Account.AccountAPI(apikey, secretkey, passphrase, False, flag)
 
     # Get account balance
     result = accountAPI.get_account_balance()
-    #print(result)
+    print(result)
 
     wb = Workbook()
     ws = wb.active
@@ -82,8 +71,9 @@ if __name__ == "__main__":
     ws["I"+str(k)].value = "Aktion"
     wb.save("OKX-Trade.xlsx")
 
-
-
+    menge = 0
+    j = 0
+    i = 1
     kauf = funktion.GET_KAUF(flag, handelsBudget)
 
     result = marketDataAPI.get_ticker(instId="BTC-USDT")
@@ -95,7 +85,7 @@ if __name__ == "__main__":
     budget = str(handelsBudget / float(handelsKurs))
 
     k = 2
-    ws["A" + str(k)].value = k-1
+    ws["A"+str(k)].value = str(i) + "." + str(j + 1)
     ws["B" + str(k)].value = handelsWaehrung
     ws["C" + str(k)].value = handelsKurs
     ws["D" + str(k)].value = handelsBudget
@@ -103,12 +93,40 @@ if __name__ == "__main__":
     ws["E" + str(k)].value = gesamtMenge
     kosten = gesamtMenge * 0.108 / 100
     ws["F" + str(k)].value = kosten
-    tatsaechlicheMenge = gesamtMenge -kosten
+    tatsaechlicheMenge = gesamtMenge - kosten
     ws["G" + str(k)].value = tatsaechlicheMenge
-
+    druchschnittskurs = handelsBudget/tatsaechlicheMenge
     ws["H" + str(k)].value = druchschnittskurs
-    ws["I" + str(k)].value = "Aktion"
+    ws["I" + str(k)].value = "Kaufen"
+    ws.insert_rows(2)
     wb.save("OKX-Trade.xlsx")
+    j = j + 1
+
+    while j != 0:
+        time.sleep(1)
+        result = marketDataAPI.get_ticker(instId="BTC-USDT")
+        handelsKurs = result["data"][0]["last"]
+        if druchschnittskurs * 0.99 > float(handelsKurs):
+            kauf=funktion.GET_KAUF(flag, handelsBudget)
+            ws["A" + str(k)].value = str(i) + "." + str(j + 1)
+            ws["B" + str(k)].value = handelsWaehrung
+            ws["C" + str(k)].value = handelsKurs
+            ws["D" + str(k)].value = handelsBudget
+            gesamtMenge = float(handelsBudget) * 1 / float(handelsKurs)
+            ws["E" + str(k)].value = gesamtMenge
+            kosten = gesamtMenge * 0.108 / 100
+            ws["F" + str(k)].value = kosten
+            tatsaechlicheMenge = gesamtMenge - kosten
+            ws["G" + str(k)].value = tatsaechlicheMenge
+            gesamtBudget = handelsBudget * (j +1)
+            eingekauteMenge = tatsaechlicheMenge + ws["G3"].value
+            druchschnittskurs = gesamtBudget / eingekauteMenge
+            ws["H" + str(k)].value = druchschnittskurs
+            ws["I" + str(k)].value = "Kaufen"
+            ws.insert_rows(2)
+            wb.save("OKX-Trade.xlsx")
+            # j = j + 1
+            j = 0                               # nur für den Testlauf
 
 
 
