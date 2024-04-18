@@ -19,18 +19,18 @@ import json
 from datetime import datetime,timezone
 import time
 import okx.Trade as Trade
+
+
 if __name__ == "__main__":
     #    print("Test")
 
-
-
-    flag = "1"  # live trading: 0, demo trading: 1
+    flag = "1"    # live trading: 0, demo trading: 1
     # API initialization
     apikey = config.GET_API_KEY(flag)
     secretkey = config.GET_SECRET_KEY(flag)
     passphrase = config.GET_PASS(flag)
 
-    handelsBudget = float(input("Bitte geben Sie den Startbetrag ein!"))
+    handelsBudget = input("Bitte geben Sie den Startbetrag ein!")
     abfrage = input("Moechten Sie ihren Gewinn in BTC oder USDT")
     steigung = input("Bitte geben Sie die Steigerungquote ein!")
     # Platz für Abfrage Verkauf in "BTC oder USDT"
@@ -81,9 +81,8 @@ if __name__ == "__main__":
     menge = 0
     j = 0
     i = 1
+
     kauf = funktion.GET_KAUF(flag, handelsBudget)
-
-
 
     result = marketDataAPI.get_ticker(instId="BTC-USDT")
     json.dump(result, open('results/api-resultat-BTC-USDT.json', 'w'), indent=4, sort_keys=True)
@@ -91,22 +90,22 @@ if __name__ == "__main__":
     handelsKurs = result["data"][0]["last"]
     print(handelsWaehrung)
     print(handelsKurs)
-    budget = str(handelsBudget / float(handelsKurs))
+    budget = str(float(handelsBudget) / float(handelsKurs))
 
     ws["A2"].value = str(i) + "." + str(j + 1)
     ws["B2"].value = handelsWaehrung
     ws["C2"].value = handelsKurs
-    ws["D2"].value = handelsBudget
-    gesamtMenge = float(handelsBudget) * 1 / float(handelsKurs)
+    ws["D2"].value = str(handelsBudget)
+    gesamtMenge = str(float(handelsBudget) * 1 / float(handelsKurs))
     ws["E2"].value = gesamtMenge
-    kosten = gesamtMenge * 0.108 / 100
-    ws["F2"].value = kosten
-    tatsaechlicheMenge = gesamtMenge - kosten
-    ws["G2"].value = tatsaechlicheMenge
-    druchschnittskurs = handelsBudget/tatsaechlicheMenge
-    ws["H2"].value = druchschnittskurs
-    ws["I2"].value = ws["G2"].value
-    ws["J2"].value = ws["D2"].value
+    kosten = float(gesamtMenge) * 0.108 / 100
+    ws["F2"].value = str(kosten)
+    tatsaechlicheMenge = float(gesamtMenge) - float(kosten)
+    ws["G2"].value = str(tatsaechlicheMenge)
+    druchschnittskurs = float(handelsBudget)/tatsaechlicheMenge
+    ws["H2"].value = str(druchschnittskurs)
+    ws["I2"].value = str(ws["G2"].value)
+    ws["J2"].value = str(ws["D2"].value)
     ws["K2"].value = "Kauf"
 
     wb.save("OKX-Trade.xlsx")
@@ -114,61 +113,87 @@ if __name__ == "__main__":
 
     while j != 0:
         try:
-            time.sleep(10.5)
+            time.sleep(121.5)
             marketDataAPI = MarketData.MarketAPI(flag=flag)
             result = marketDataAPI.get_ticker(instId="BTC-USDT")
             handelsKurs = result["data"][0]["last"]
             print(handelsKurs)
 
-            if j!=2: #druchschnittskurs * 0.99 > float(handelsKurs):
+            if j != 3: #druchschnittskurs * 0.99 > float(handelsKurs):
                 kauf = funktion.GET_KAUF(flag, handelsBudget)
                 ws.insert_rows(2)
                 ws["A2"].value = str(i) + "." + str(j + 1)
                 ws["B2"].value = handelsWaehrung
                 ws["C2"].value = handelsKurs
-                ws["D2"].value = handelsBudget
+                ws["D2"].value = str(handelsBudget)
                 gesamtMenge = float(handelsBudget) * 1 / float(handelsKurs)
                 ws["E2"].value = gesamtMenge
-                kosten = gesamtMenge * 0.108 / 100
-                ws["F2"].value = kosten
-                tatsaechlicheMenge = gesamtMenge - kosten
-                ws["G2"].value = tatsaechlicheMenge
+                kosten = float(gesamtMenge) * 0.108 / 100
+                ws["F2"].value = str(kosten)
+                tatsaechlicheMenge = float(gesamtMenge) - kosten
+                ws["G2"].value = str(tatsaechlicheMenge)
+                gesamtBudget = handelsBudget + float(ws["J3"].value)
+                eingekauteMenge = tatsaechlicheMenge + float(ws["I3"].value)
+                ws["I2"].value = str(eingekauteMenge)
+                ws["J2"].value = str(gesamtBudget)
+                druchschnittskurs = float(ws["J2"].value) / float(ws["I2"].value)
+                ws["H2"].value = str(druchschnittskurs)
+                ws["K2"].value = "Kauf"
+                wb.save("OKX-Trade.xlsx")
+                j = j + 1
+            elif (float(ws["H2"].value) * 1.015 < float(handelsKurs)) and (abfrage.casefold() == "BTC".casefold()):
+                verkauf = funktion.verkaufBtc(flag, str(ws["I2"].value))
+                ws.insert_rows(2)
+                ws["A2"].value = str(i) + "." + str(j + 1)
+                ws["B2"].value = handelsWaehrung
+                ws["C2"].value = handelsKurs
+                ws["D2"].value = ws["J3"].value
+                # gesamtMenge = float(handelsBudget) * 1 / float(handelsKurs)
+                # ws["E2"].value = gesamtMenge
+                # kosten = gesamtMenge * 0.108 / 100
+                # ws["F2"].value = kosten
+                #tatsaechlicheMenge = gesamtMenge - kosten
+                #ws["G2"].value = tatsaechlicheMenge
                 gesamtBudget = float(handelsBudget) + float(str(ws["J3"].value))
                 eingekauteMenge = tatsaechlicheMenge + float(str(ws["I3"].value))
                 ws["I2"].value = eingekauteMenge
-                ws["J2"].value = gesamtBudget
-                druchschnittskurs = ws["J2"].value / ws["I2"].value
-                ws["H2"].value = druchschnittskurs
-                ws["K2"].value = "Kauf"
-
+                ws["J2"].value = ws["J3"].value
+                ws["H2"].value = str(float(ws["H3"].value)*float(ws["J3"].value))
+                ws["K2"].value = "verkauf"
+                ws.insert_rows(1)
+                ws.insert_rows(1)
+                ws.insert_rows(2)
+                j = 0
+                i = i + 1
                 wb.save("OKX-Trade.xlsx")
-                j = j + 1
+            elif (float(ws["H2"].value) * 1.015 < float(handelsKurs)) and (abfrage.casefold() == "USDT".casefold()):
+                verkauf = funktion.verkaufUsdt(flag, str(ws["I2"].value))
+                ws.insert_rows(2)
+                ws["A2"].value = str(i) + "." + str(j + 1)
+                ws["B2"].value = handelsWaehrung
+                ws["C2"].value = handelsKurs
+                ws["D2"].value = ws["J3"].value
+                # gesamtMenge = float(handelsBudget) * 1 / float(handelsKurs)
+                # ws["E2"].value = gesamtMenge
+                # kosten = gesamtMenge * 0.108 / 100
+                # ws["F2"].value = kosten
+                #tatsaechlicheMenge = gesamtMenge - kosten
+                #ws["G2"].value = tatsaechlicheMenge
+                gesamtBudget = float(handelsBudget) + float(str(ws["J3"].value))
+                eingekauteMenge = tatsaechlicheMenge + float(str(ws["I3"].value))
+                ws["I2"].value = eingekauteMenge
+                ws["J2"].value = ws["J3"].value
+                ws["H2"].value = str(float(ws["H3"].value)*float(ws["J3"].value))
+                ws["K2"].value = "verkauf"
+                ws.insert_rows(1)
+                ws.insert_rows(1)
+                ws.insert_rows(2)
+                j = 0
+                i = i + 1
+                wb.save("OKX-Trade.xlsx")
+            else:
+                print("NIX")
 
-                # j = 0                               # nur für den Testlauf
-
-            elif j == 2: #druchschnittskurs * 1.015 < float(handelsKurs) and abfrage == "BTC" or "BTc" or "Btc" or "btc" or "BtC" or "bTC" or "bTc":
-
-                    verkauf = funktion.verkaufBtc(flag, str(ws["I2"].value))
-
-                    ws.insert_rows(2)
-                    ws["A2"].value = str(i) + "." + str(j + 1)
-                    ws["B2"].value = handelsWaehrung
-                    ws["C2"].value = handelsKurs
-                    ws["D2"].value = ws["J3"].value
-                    # gesamtMenge = float(handelsBudget) * 1 / float(handelsKurs)
-                    # ws["E2"].value = gesamtMenge
-                    # kosten = gesamtMenge * 0.108 / 100
-                    # ws["F2"].value = kosten
-                    #tatsaechlicheMenge = gesamtMenge - kosten
-                    #ws["G2"].value = tatsaechlicheMenge
-                    gesamtBudget = float(handelsBudget) + float(str(ws["J3"].value))
-                    eingekauteMenge = tatsaechlicheMenge + float(str(ws["I3"].value))
-                    ws["I2"].value = eingekauteMenge
-                    ws["J2"].value = gesamtBudget
-                    ws["H2"].value = ws["J3"].value
-                    ws["K2"].value = "verkauf"
-                    j = 0
-                    wb.save("OKX-Trade.xlsx")
                 #if für Gewinn in BTC erzielen
                 # else für Gewinn in USDT erzielen
 
